@@ -2,6 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import numeral from "numeral";
 
+const casesTypeColors = {
+  cases: {
+    hex: '#1e90ff',
+  },
+  recovered: {
+    hex: "#4dff4d",
+  },
+  deaths: {
+    hex: "#fb4443",
+  },
+};
 const options = {
   legend: {
     display: false,
@@ -47,21 +58,25 @@ const options = {
   },
 };
 
-const buildChartData = (data, casesType) => {
-  let chartData = [];
+const buildChartData=(data,casesType)=>{
+  const chartData=[];
   let lastDataPoint;
-  for (let date in data.cases) {
-    if (lastDataPoint) {
-      let newDataPoint = {
-        x: date,
-        y: data[casesType][date] - lastDataPoint,
-      };
-      chartData.push(newDataPoint);
-    }
-    lastDataPoint = data[casesType][date];
-  }
+  // here data is a dictionary
+  const keys = Object.keys(data[casesType]);
+  keys.forEach((key, index) => {
+ 
+          const newDataPoint={
+              // here x is date and y is value
+              x:key,
+              y:data[casesType][key]
+          }
+        chartData.push(newDataPoint)
+      
+      // lastDataPoint=data[casesType][key];
+  });
   return chartData;
-};
+  }
+
 
 function LineGraph({ casesType }) {
   const [data, setData] = useState({});
@@ -75,8 +90,8 @@ function LineGraph({ casesType }) {
         .then((data) => {
           let chartData = buildChartData(data, casesType);
           setData(chartData);
-          console.log(chartData);
-          // buildChart(chartData);
+        
+    
         });
     };
 
@@ -90,8 +105,8 @@ function LineGraph({ casesType }) {
           data={{
             datasets: [
               {
-                backgroundColor: "rgba(204, 16, 52, 0.5)",
-                borderColor: "#CC1034",
+                backgroundColor:casesTypeColors[casesType].hex,
+                borderColor:casesTypeColors[casesType].hex,
                 data: data,
               },
             ],
